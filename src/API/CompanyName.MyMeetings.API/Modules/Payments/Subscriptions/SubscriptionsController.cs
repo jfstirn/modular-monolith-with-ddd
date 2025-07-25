@@ -1,4 +1,4 @@
-﻿using CompanyName.MyMeetings.API.Configuration.Authorization;
+﻿using CompanyName.MyMeetings.BuildingBlocks.Infrastructure.Authorization;
 using CompanyName.MyMeetings.Modules.Payments.Application.Contracts;
 using CompanyName.MyMeetings.Modules.Payments.Application.Subscriptions.BuySubscription;
 using CompanyName.MyMeetings.Modules.Payments.Application.Subscriptions.BuySubscriptionRenewal;

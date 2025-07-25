@@ -1,4 +1,4 @@
-﻿using CompanyName.MyMeetings.API.Configuration.Authorization;
+﻿using CompanyName.MyMeetings.BuildingBlocks.Infrastructure.Authorization;
 using CompanyName.MyMeetings.Modules.Meetings.Application.Contracts;
 using CompanyName.MyMeetings.Modules.Meetings.Application.MeetingCommentingConfigurations.DisableMeetingCommentingConfiguration;
 using CompanyName.MyMeetings.Modules.Meetings.Application.MeetingCommentingConfigurations.EnableMeetingCommentingConfiguration;

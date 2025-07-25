@@ -14,3 +14,6 @@ Content-Type: application/json
 
 ### User registration confirmation
 PATCH {{baseUrl}}/userAccess/UserRegistrations/e80985c5-bf97-4bb3-b178-9423d70ef87b/confirm
+
+### Get user accounts
+GET http://localhost:5000/api/users/accounts

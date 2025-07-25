@@ -1,8 +1,9 @@
-﻿using CompanyName.MyMeetings.BuildingBlocks.Application;
+﻿using System.Security.Claims;
+using CompanyName.MyMeetings.BuildingBlocks.Application;
 
 namespace CompanyName.MyMeetings.API.Configuration.ExecutionContext
 {
-    public class ExecutionContextAccessor : IExecutionContextAccessor
+    internal class ExecutionContextAccessor : IExecutionContextAccessor
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -19,11 +20,11 @@ namespace CompanyName.MyMeetings.API.Configuration.ExecutionContext
                     .HttpContext?
                     .User?
                     .Claims?
-                    .SingleOrDefault(x => x.Type == "sub")?
+                    .SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
                     .Value != null)
                 {
                     return Guid.Parse(_httpContextAccessor.HttpContext.User.Claims.Single(
-                        x => x.Type == "sub").Value);
+                        x => x.Type == ClaimTypes.NameIdentifier).Value);
                 }
 
                 throw new ApplicationException("User context is not available");
@@ -34,11 +35,11 @@ namespace CompanyName.MyMeetings.API.Configuration.ExecutionContext
         {
             get
             {
-                if (IsAvailable && _httpContextAccessor.HttpContext.Request.Headers.Keys.Any(
+                if (IsAvailable && _httpContextAccessor.HttpContext!.Request.Headers.Keys.Any(
                     x => x == CorrelationMiddleware.CorrelationHeaderKey))
                 {
                     return Guid.Parse(
-                        _httpContextAccessor.HttpContext.Request.Headers[CorrelationMiddleware.CorrelationHeaderKey]);
+                        _httpContextAccessor.HttpContext!.Request.Headers[CorrelationMiddleware.CorrelationHeaderKey]!);
                 }
 
                 throw new ApplicationException("Http context and correlation id is not available");

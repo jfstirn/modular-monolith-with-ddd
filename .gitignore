@@ -275,3 +275,6 @@ UploadedFiles
 #Nuke working directory
 .nuke-working-directory
 /src/API/CompanyName.MyMeetings.API/tempkey.jwk
+
+# CodeRush personal settings
+*/.cr/personal

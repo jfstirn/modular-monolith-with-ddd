@@ -1,4 +1,4 @@
-﻿using CompanyName.MyMeetings.API.Configuration.Authorization;
+﻿using CompanyName.MyMeetings.BuildingBlocks.Infrastructure.Authorization;
 using CompanyName.MyMeetings.Modules.Administration.Application.Contracts;
 using CompanyName.MyMeetings.Modules.Administration.Application.MeetingGroupProposals.AcceptMeetingGroupProposal;
 using CompanyName.MyMeetings.Modules.Administration.Application.MeetingGroupProposals.GetMeetingGroupProposal;

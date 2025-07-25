@@ -882,7 +882,7 @@ PRINT N'Creating [registrations].[v_UserRegistrations]...';
 
 
 GO
-CREATE VIEW [users].[v_UserRegistrations]
+CREATE VIEW [registrations].[v_UserRegistrations]
 AS
 SELECT
     [UserRegistration].[Id],
@@ -891,7 +891,8 @@ SELECT
     [UserRegistration].[FirstName],
     [UserRegistration].[LastName],
     [UserRegistration].[Name],
-    [UserRegistration].[StatusCode]
+    [UserRegistration].[StatusCode],
+    [UserRegistration].[Password]
 FROM [registrations].[UserRegistrations] AS [UserRegistration]
 GO
 PRINT N'Creating [users].[v_UserPermissions]...';

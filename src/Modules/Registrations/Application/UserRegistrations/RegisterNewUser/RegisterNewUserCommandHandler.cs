@@ -1,4 +1,5 @@
-﻿using CompanyName.MyMeetings.Modules.Registrations.Application.Configuration.Commands;
+﻿using CompanyName.MyMeetings.BuildingBlocks.Application.Security;
+using CompanyName.MyMeetings.Modules.Registrations.Application.Configuration.Commands;
 using CompanyName.MyMeetings.Modules.Registrations.Domain.UserRegistrations;
 
 namespace CompanyName.MyMeetings.Modules.Registrations.Application.UserRegistrations.RegisterNewUser
