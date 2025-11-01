@@ -3,12 +3,26 @@ using Autofac;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.SwaggerGen;
+#nullable enable
 
 namespace CompanyName.MyMeetings.BuildingBlocks.Infrastructure.ModuleHosting;
 
 public abstract class ModuleBase(IConfiguration hostConfiguration) : IModule
 {
     public abstract string WebApiAssemblySearchPattern { get; }
+
+    public Assembly? WebApiAssembly
+    {
+        get
+        {
+            var file = Directory
+                .GetFiles(AppContext.BaseDirectory, WebApiAssemblySearchPattern)
+                .SingleOrDefault();
+
+            return file is null ? null : Assembly.LoadFrom(file);
+        }
+    }
 
     public IConfiguration HostConfiguration { get; } = hostConfiguration;
 
@@ -20,6 +34,19 @@ public abstract class ModuleBase(IConfiguration hostConfiguration) : IModule
     {
         RegisterModuleParts(applicationPartManager);
         AddHostServices(services);
+    }
+
+    public virtual void ConfigureSwagger(SwaggerGenOptions options)
+    {
+        if (WebApiAssembly is null)
+        {
+            return;
+        }
+
+        var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        var commentsFileName = $"{WebApiAssembly.GetName().Name}.xml";
+        var commentsFile = Path.Combine(baseDirectory, commentsFileName);
+        options.IncludeXmlComments(commentsFile);
     }
 
     /// <summary>
@@ -38,18 +65,12 @@ public abstract class ModuleBase(IConfiguration hostConfiguration) : IModule
     /// predefined search pattern. If the assembly is found, it is loaded and added to the <paramref
     /// name="applicationPartManager"/>. This allows ASP.NET Core to discover MVC controllers and related features
     /// defined in the Web API assembly.</remarks>
-    /// <param name="applicationPartManager">The <see cref="ApplicationPartManager"/> to which the Web API assembly will be added as an application part.
-    /// Cannot be null.</param>
+    /// <param name="applicationPartManager">The <see cref="ApplicationPartManager"/> to which the Web API assembly will be added as an application part.</param>
     private void RegisterModuleParts(ApplicationPartManager applicationPartManager)
     {
-        var webApiAssembly = Directory
-            .GetFiles(AppContext.BaseDirectory, WebApiAssemblySearchPattern)
-            .Select(Assembly.LoadFrom)
-            .SingleOrDefault();
-
-        if (webApiAssembly != null)
+        if (WebApiAssembly is not null)
         {
-            applicationPartManager.ApplicationParts.Add(new AssemblyPart(webApiAssembly));
+            applicationPartManager.ApplicationParts.Add(new AssemblyPart(WebApiAssembly));
         }
     }
 }

@@ -7,7 +7,6 @@ using AuthorizationApplication = CompanyName.MyMeetings.Modules.UsersMI.Applicat
 
 namespace CompanyName.MyMeetings.Modules.UsersMI.WebApi.Endpoints.Authorization;
 
-[ApiController]
 [Route("api/authorization")]
 public class AuthorizationController : ApplicationController
 {
@@ -18,6 +17,12 @@ public class AuthorizationController : ApplicationController
         _userAccessModule = userAccessModule;
     }
 
+    /// <summary>
+    /// Retrieves a directory of available permissions for the application.
+    /// </summary>
+    /// <remarks>The returned permission can be assigned to roles or users to control access to various features.</remarks>
+    /// <returns>An <see cref="IResult"/> containing the list of permissions if successful; otherwise, an error result indicating
+    /// the reason for failure.</returns>
     [HttpGet("permissions")]
     [NoPermissionRequired]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
@@ -40,6 +45,6 @@ public class AuthorizationController : ApplicationController
             return response.ToApiResult(permissionsResponse);
         }
 
-        return FromResponse(response);
+        return ToApiResult(response);
     }
 }

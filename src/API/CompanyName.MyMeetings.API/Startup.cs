@@ -56,7 +56,7 @@ namespace CompanyName.MyMeetings.API
             builder.PartManager.ApplicationParts.Clear();
             builder.PartManager.ApplicationParts.Add(new AssemblyPart(typeof(Startup).Assembly));
 
-            services.AddSwaggerDocumentation();
+            services.AddSwaggerDocumentation(_moduleLoader);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IExecutionContextAccessor, ExecutionContextAccessor>();

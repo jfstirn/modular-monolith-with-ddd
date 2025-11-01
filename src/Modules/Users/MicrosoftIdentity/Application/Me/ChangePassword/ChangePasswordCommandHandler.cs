@@ -1,4 +1,5 @@
 ﻿using CompanyName.MyMeetings.BuildingBlocks.Application;
+using CompanyName.MyMeetings.BuildingBlocks.Application.Security;
 using CompanyName.MyMeetings.Modules.UsersMI.Application.Configuration.Commands;
 using CompanyName.MyMeetings.Modules.UsersMI.Application.Contracts.Results;
 using CompanyName.MyMeetings.Modules.UsersMI.Domain;
@@ -30,7 +31,8 @@ internal class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComm
             return Result.Forbidden(Errors.Authorization.Forbidden("No permission to change password."));
         }
 
-        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        var newPassword = PasswordManager.HashPassword(request.NewPassword);
+        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, newPassword);
         if (!result.Succeeded)
         {
             return result.Errors.Map().Combine();

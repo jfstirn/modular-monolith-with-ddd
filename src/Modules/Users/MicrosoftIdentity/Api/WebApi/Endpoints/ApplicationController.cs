@@ -1,6 +1,7 @@
-﻿using CompanyName.MyMeetings.Modules.UsersMI.Application.Contracts.Results;
+﻿using CompanyName.MyMeetings.Modules.UsersMI.Contracts.Results;
 using CompanyName.MyMeetings.Modules.UsersMI.Domain;
 using Microsoft.AspNetCore.Mvc;
+using ApplicationResult = CompanyName.MyMeetings.Modules.UsersMI.Application.Contracts.Results;
 
 namespace CompanyName.MyMeetings.Modules.UsersMI.WebApi.Endpoints;
 
@@ -15,50 +16,38 @@ namespace CompanyName.MyMeetings.Modules.UsersMI.WebApi.Endpoints;
 [Route("api/[controller]")]
 public class ApplicationController : ControllerBase
 {
-    protected new Microsoft.AspNetCore.Http.IResult Ok(object? result = null)
+    protected new Microsoft.AspNetCore.Http.IResult Ok()
     {
-        return Result.Ok(result).ToApiResult();
+        return Result.Ok().ToApiResult();
     }
 
-    /*
-    protected IActionResult Ok(string successMessage, object result = null)
+    protected new Microsoft.AspNetCore.Http.IResult Ok(object? value)
     {
-        return ApiResult.Ok(result, successMessage);
-    }
-    */
-
-    protected Microsoft.AspNetCore.Http.IResult NotFound(Error error, string? invalidField = null)
-    {
-        return Result.NotFound(error).ToApiResult();
+        return Result.Ok(value).ToApiResult();
     }
 
-    protected Microsoft.AspNetCore.Http.IResult Error(Error error, string? invalidField = null)
+    protected Microsoft.AspNetCore.Http.IResult Ok<T>(T value)
     {
-        return Result.Error(error).ToApiResult();
+        return Result.Ok(value).ToApiResult();
+    }
+
+    protected Microsoft.AspNetCore.Http.IResult NotFound(Error error)
+    {
+        return Result.NotFound(error.Translate()).ToApiResult();
     }
 
     protected Microsoft.AspNetCore.Http.IResult Error(Error error)
     {
-        return Result.Error(error).ToApiResult();
+        return Result.Error(error.Translate()).ToApiResult();
     }
 
-    protected Microsoft.AspNetCore.Http.IResult FromResponse(Result response)
+    protected Microsoft.AspNetCore.Http.IResult ToApiResult(ApplicationResult.Result result)
     {
-        return response.ToApiResult();
+        return result.ToApiResult();
     }
 
-    protected Microsoft.AspNetCore.Http.IResult FromResponse<T>(Result<T> response)
+    protected Microsoft.AspNetCore.Http.IResult ToApiResult<T>(ApplicationResult.Result<T> result)
     {
-        return response.ToApiResult();
-    }
-
-    protected Microsoft.AspNetCore.Http.IResult FromResult<T>(CSharpFunctionalExtensions.Result<T, Error> result)
-    {
-        if (result.IsSuccess)
-        {
-            return Ok();
-        }
-
-        return Error(result.Error);
+        return result.ToApiResult();
     }
 }

@@ -3,6 +3,7 @@ using Autofac;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CompanyName.MyMeetings.BuildingBlocks.Infrastructure.ModuleHosting;
 
@@ -69,6 +70,14 @@ public class ModuleLoader
         foreach (var module in _modules)
         {
             module.InitializeModule(hostServices);
+        }
+    }
+
+    public void ConfigureSwaggerModules(SwaggerGenOptions options)
+    {
+        foreach (var module in _modules)
+        {
+            module.ConfigureSwagger(options);
         }
     }
 }

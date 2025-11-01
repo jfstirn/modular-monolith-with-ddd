@@ -3,7 +3,7 @@ using CompanyName.MyMeetings.Modules.UsersMI.Domain;
 
 namespace CompanyName.MyMeetings.Modules.UsersMI.WebApi;
 
-public static class ErrorMapper
+public static class ErrorExtensions
 {
     public static IDictionary<string, IEnumerable<ErrorMessage>> Translate(this Error error)
     {

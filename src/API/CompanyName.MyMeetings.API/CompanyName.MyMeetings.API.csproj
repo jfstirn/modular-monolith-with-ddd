@@ -6,7 +6,4 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DocumentationFile>bin\Debug\CompanyName.MyMeetings.API.xml</DocumentationFile>
-  </PropertyGroup>
 </Project>

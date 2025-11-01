@@ -1,4 +1,5 @@
-﻿using CompanyName.MyMeetings.Modules.UsersMI.Application.Configuration.Commands;
+﻿using CompanyName.MyMeetings.BuildingBlocks.Application.Security;
+using CompanyName.MyMeetings.Modules.UsersMI.Application.Configuration.Commands;
 using CompanyName.MyMeetings.Modules.UsersMI.Application.Contracts.Results;
 using CompanyName.MyMeetings.Modules.UsersMI.Domain;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +23,8 @@ internal class ResetPasswordCommandHandler : ICommandHandler<ResetPasswordComman
             return Errors.General.NotFound(request.EmailAddress, "User");
         }
 
-        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
+        var newPassword = PasswordManager.HashPassword(request.Password);
+        var result = await _userManager.ResetPasswordAsync(user, request.Token, newPassword);
         if (!result.Succeeded)
         {
             return result.Errors.Map().Combine();

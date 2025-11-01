@@ -25,13 +25,14 @@ public class UsersController : ApplicationController
     }
 
     /// <summary>
-    /// Gets the user directory.
+    /// Retrieves a list of user accounts.
     /// </summary>
-    /// <returns>List of users.</returns>
+    /// <remarks>Requires the caller to have the appropriate permission to get the user accounts.</remarks>
+    /// <returns>An <see cref="IResult"/> containing the user account directory if the request is authorized and successful;
+    /// otherwise, an error result indicating the reason for failure.</returns>
     [HttpGet]
     [HasPermission(UsersPermissions.GetUsers)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> GetUserAccountDirectory()
@@ -64,13 +65,20 @@ public class UsersController : ApplicationController
             return response.ToApiResult(userAccountsResponse);
         }
 
-        return FromResponse(response);
+        return ToApiResult(response);
     }
 
+    /// <summary>
+    /// Retrieves the account details for a specified user.
+    /// </summary>
+    /// <remarks>Requires the caller to have the appropriate permission to access the account details information.</remarks>
+    /// <param name="userId">The unique identifier of the user whose account information is to be retrieved.</param>
+    /// <returns>An <see cref="IResult"/> containing the user's account details if found; otherwise, an appropriate error
+    /// response.</returns>
     [HttpGet("{userId}")]
     [HasPermission(UsersPermissions.GetUsers)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> GetUserAccount(Guid userId)
@@ -100,12 +108,21 @@ public class UsersController : ApplicationController
             return response.ToApiResult(userAccountResponse);
         }
 
-        return FromResponse(response);
+        return ToApiResult(response);
     }
 
+    /// <summary>
+    /// Updates the account information for the specified user.
+    /// </summary>
+    /// <remarks>Requires the caller to have the appropriate permission to update user accounts.</remarks>
+    /// <param name="userId">The unique identifier of the user whose account will be updated.</param>
+    /// <param name="request">An object containing the updated account details.</param>
+    /// <returns>An <see cref="IResult"/> indicating the outcome of the update operation. Returns a success result if the update
+    /// is completed; otherwise, returns an error result describing the failure.</returns>
     [HttpPut("{userId}")]
     [HasPermission(UsersPermissions.UpdateUserAccount)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
@@ -115,10 +132,16 @@ public class UsersController : ApplicationController
         return response.ToApiResult();
     }
 
-    [HttpPut("{userId}/unlock")]
+    /// <summary>
+    /// Unlocks the specified user account, allowing the user to regain access if previously locked.
+    /// </summary>
+    /// <remarks>This operation requires the caller to have the appropriate  permission.</remarks>
+    /// <param name="userId">The unique identifier of the user account to unlock.</param>
+    /// <returns>An <see cref="IResult"/> indicating the outcome of the unlock operation.</returns>
+    [HttpPatch("{userId}/unlock")]
     [HasPermission(UsersPermissions.UnlockUserAccount)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> UnlockUserAccount(Guid userId)
@@ -127,10 +150,17 @@ public class UsersController : ApplicationController
         return response.ToApiResult();
     }
 
+    /// <summary>
+    /// Retrieves the list of roles assigned to the specified user.
+    /// </summary>
+    /// <remarks>This operation requires the caller to have the appropriate permission to access user roles.</remarks>
+    /// <param name="userId">The unique identifier of the user whose roles are to be retrieved.</param>
+    /// <returns>An <see cref="IResult"/> containing the user's roles if the operation is successful; otherwise, an error result
+    /// indicating the reason for failure.</returns>
     [HttpGet("{userId}/roles")]
     [HasPermission(UsersPermissions.GetUserRoles)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> GetUserRoles(Guid userId)
@@ -150,13 +180,20 @@ public class UsersController : ApplicationController
             return response.ToApiResult(userRolesResponse);
         }
 
-        return FromResponse(response);
+        return ToApiResult(response);
     }
 
+    /// <summary>
+    /// Updates the roles assigned to the specified user.
+    /// </summary>
+    /// <remarks>This operation requires the caller to have the appropriate permission.</remarks>
+    /// <param name="userId">The unique identifier of the user whose roles are to be updated.</param>
+    /// <param name="request">An object containing the list of role IDs to assign to the user.</param>
+    /// <returns>An <see cref="IResult"/> indicating the outcome of the operation.</returns>
     [HttpPut("{userId}/roles")]
     [HasPermission(UsersPermissions.SetUserRoles)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> SetUserRoles(Guid userId, SetUserRolesRequest request)
@@ -165,10 +202,17 @@ public class UsersController : ApplicationController
         return response.ToApiResult();
     }
 
+    /// <summary>
+    /// Retrieves the set of permissions assigned to the specified user.
+    /// </summary>
+    /// <remarks>Requires the caller to have the appropriate permission to access user permissions.</remarks>
+    /// <param name="userId">The unique identifier of the user whose permissions are to be retrieved.</param>
+    /// <returns>An <see cref="IResult"/> containing the user's permissions if found; otherwise, a result indicating the
+    /// appropriate error status.</returns>
     [HttpGet("{userId}/permissions")]
     [HasPermission(UsersPermissions.GetUserPermissions)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> GetUserPermissions(Guid userId)
@@ -189,13 +233,20 @@ public class UsersController : ApplicationController
             return response.ToApiResult(userPermissionsResponse);
         }
 
-        return FromResponse(response);
+        return ToApiResult(response);
     }
 
+    /// <summary>
+    /// Updates the permissions assigned to the specified user.
+    /// </summary>
+    /// <remarks>This operation requires the caller to have the appropriate permission.</remarks>
+    /// <param name="userId">The unique identifier of the user whose permissions are to be updated.</param>
+    /// <param name="request">An object containing the new set of permissions to assign to the user. Cannot be null.</param>
+    /// <returns>An <see cref="IResult"/> indicating the outcome of the operation.</returns>
     [HttpPut("{userId}/permissions")]
     [HasPermission(UsersPermissions.SetUserPermissions)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> SetUserPermissions(Guid userId, [FromBody] SetUserPermissionsRequest request)
@@ -204,10 +255,19 @@ public class UsersController : ApplicationController
         return response.ToApiResult();
     }
 
+    /// <summary>
+    /// Changes the email address associated with the specified user.
+    /// </summary>
+    /// <remarks>This operation requires the caller to have the appropriate permission.</remarks>
+    /// <param name="userId">The unique identifier of the user whose email address will be updated.</param>
+    /// <param name="request">An object containing the new email address to assign to the user. Must not be null.</param>
+    /// <returns>An <see cref="IResult"/> indicating the outcome of the operation. Returns a 200 OK result if the email address
+    /// was changed successfully; 404 Not Found if the user does not exist; 401 Unauthorized or 403 Forbidden if the
+    /// caller lacks sufficient permissions.</returns>
     [HttpPut("{userId}/change-email-address")]
     [HasPermission(UsersPermissions.ChangeUserEmailAddress)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IResult), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(IResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(IResult), StatusCodes.Status403Forbidden)]
     public async Task<IResult> ChangeUserEmailAddress(Guid userId, ChangeUserEmailAddressRequest request)

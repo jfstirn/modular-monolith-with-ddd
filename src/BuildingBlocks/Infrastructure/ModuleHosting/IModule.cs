@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.SwaggerGen;
 #nullable enable
 
 namespace CompanyName.MyMeetings.BuildingBlocks.Infrastructure.ModuleHosting;
@@ -36,4 +37,13 @@ public interface IModule
     /// </summary>
     /// <param name="hostServices">The services initialized by the host that can be used for module initialization.</param>
     void InitializeModule(HostServices hostServices);
+
+    /// <summary>
+    /// Configures Swagger generation options for the API documentation.
+    /// </summary>
+    /// <remarks>Call this method to customize the generated Swagger documentation, such as adding metadata,
+    /// security definitions, or custom filters. This method should be invoked during service configuration before
+    /// building the API documentation.</remarks>
+    /// <param name="options">The Swagger generation options to be configured.</param>
+    void ConfigureSwagger(SwaggerGenOptions options);
 }
