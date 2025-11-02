@@ -108,7 +108,14 @@ namespace CompanyName.MyMeetings.API
             // app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers()
+
+                    // By default: Protect all controllers
+                    // Add [AllowAnonymous] either to the controller class or the action to allow anonymous/guest access.
+                    .RequireAuthorization();
+            });
         }
 
         private static void ConfigureLogger()

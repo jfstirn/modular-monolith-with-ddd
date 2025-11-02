@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Autofac;
+using CompanyName.MyMeetings.BuildingBlocks.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +71,7 @@ public abstract class ModuleBase(IConfiguration hostConfiguration) : IModule
     {
         if (WebApiAssembly is not null)
         {
+            AuthorizationChecker.CheckAllEndpoints(WebApiAssembly);
             applicationPartManager.ApplicationParts.Add(new AssemblyPart(WebApiAssembly));
         }
     }

@@ -6,16 +6,17 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CompanyName.MyMeetings.Modules.UsersMI.Infrastructure.Configuration.Identity;
 
-internal class HasPermissionAuthorizationHandler : AttributeAuthorizationHandler<HasPermissionAuthorizationRequirement, HasPermissionAttribute>
+internal sealed class HasPermissionAuthorizationHandler
+    : AttributeAuthorizationHandler<HasPermissionAuthorizationRequirement, HasPermissionAttribute>
 {
-    private readonly IUserAccessModule _userManagementModule;
+    private readonly IUserAccessModule _userAccessModule;
     private readonly IExecutionContextAccessor _executionContextAccessor;
 
     public HasPermissionAuthorizationHandler(
-        IUserAccessModule userManagementModule,
+        IUserAccessModule userAccessModule,
         IExecutionContextAccessor executionContextAccessor)
     {
-        _userManagementModule = userManagementModule;
+        _userAccessModule = userAccessModule;
         _executionContextAccessor = executionContextAccessor;
     }
 
@@ -30,25 +31,14 @@ internal class HasPermissionAuthorizationHandler : AttributeAuthorizationHandler
             return;
         }
 
-        var userId = _executionContextAccessor.UserId;
-        var response = await _userManagementModule.ExecuteQueryAsync(new GetPermissionsQuery(userId));
-        if (!response.IsSuccess)
+        if (!TryGetUserId(out var userId))
         {
             context.Fail();
             return;
         }
 
-        var permissions = response.Value ?? Enumerable.Empty<PermissionDto>();
-
-        // Short circuit if the user owns the administrator privilege.
-        if (permissions.Any(x => x.Code.Equals(ApplicationPermissions.Administrator)))
-        {
-            context.Succeed(requirement);
-            return;
-        }
-
-        // Check if the user owns the necessary rights.
-        if (!IsAuthorized(attribute.Name, permissions))
+        var permissions = await GetUserPermissionsAsync(userId);
+        if (!HasAdministratorPermission(permissions) || !HasRequiredPermission(attribute.Name, permissions))
         {
             context.Fail();
             return;
@@ -57,8 +47,31 @@ internal class HasPermissionAuthorizationHandler : AttributeAuthorizationHandler
         context.Succeed(requirement);
     }
 
-    private bool IsAuthorized(string permission, IEnumerable<PermissionDto> permissions)
+    private bool TryGetUserId(out Guid userId)
     {
-        return permissions.Any(x => x.Code == permission);
+        try
+        {
+            userId = _executionContextAccessor.UserId;
+            return true;
+        }
+        catch (ApplicationException)
+        {
+            userId = default;
+            return false;
+        }
     }
+
+    private async Task<IEnumerable<PermissionDto>> GetUserPermissionsAsync(Guid userId)
+    {
+        var response = await _userAccessModule.ExecuteQueryAsync(new GetPermissionsQuery(userId));
+        return response.IsSuccess
+            ? response.Value ?? Enumerable.Empty<PermissionDto>()
+            : Enumerable.Empty<PermissionDto>();
+    }
+
+    private static bool HasAdministratorPermission(IEnumerable<PermissionDto> permissions) =>
+        permissions.Any(x => x.Code.Equals(ApplicationPermissions.Administrator));
+
+    private static bool HasRequiredPermission(string requiredPermission, IEnumerable<PermissionDto> permissions) =>
+        permissions.Any(x => x.Code == requiredPermission);
 }

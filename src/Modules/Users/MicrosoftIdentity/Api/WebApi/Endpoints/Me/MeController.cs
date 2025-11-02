@@ -11,13 +11,11 @@ using CompanyName.MyMeetings.Modules.UsersMI.Application.Me.RequestChangeEmailAd
 using CompanyName.MyMeetings.Modules.UsersMI.Application.Me.RequestConfirmEmailAddressToken;
 using CompanyName.MyMeetings.Modules.UsersMI.Application.Me.UpdateProfile;
 using CompanyName.MyMeetings.Modules.UsersMI.Contracts.V1.Me;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyName.MyMeetings.Modules.UsersMI.WebApi.Endpoints.Me;
 
-[Authorize]
 [Route("api/users/me")]
 public class MeController : ApplicationController
 {
